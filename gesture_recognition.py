@@ -1,6 +1,8 @@
 import cv2
+import click
 import numpy as np
 import tensorflow as tf
+
 
 WINDOW_NAME = "Gesture recognition"
 
@@ -23,12 +25,19 @@ def calculate_temperature(raw_value: np.uint16) -> np.uint8:
     return temperature.astype(np.uint8)
 
 
-def gesture_recognition():
-    """Gesture recognition."""
+@click.command()
+@click.option('-m', '--model_path', help='Path to TensorFlow SavedModel', default='./content/squeezenet_gesture_recognition_model/')
+def gesture_recognition(model_path:str):
+    """Gesture recognition.
+    
+    Notes
+    -----
+    SqueezeNet : https://arxiv.org/abs/1602.07360
+    """
 
-    gesture_classes = ['paper', 'stone', 'scissors', '']
+    gesture_classes = ['paper', 'rock', 'scissors', '']
 
-    model = tf.keras.models.load_model('./content/squeezenet_gesture_recognition_model/')
+    model = tf.keras.models.load_model(model_path)
 
     cap = cv2.VideoCapture(2)
     cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter.fourcc('Y','1','6',' '))
@@ -48,12 +57,14 @@ def gesture_recognition():
 
         gesture_label = model.predict(np.array([frame]))
         label = gesture_classes[np.argmax(gesture_label, axis=1).astype(int)[0]]
-        confidence = f'{int(np.max(gesture_label) * 100)}%'
 
-        frame = cv2.putText(frame, label, (10,25), cv2.FONT_HERSHEY_SIMPLEX, 
-                   1, (0,255,0), 1, cv2.LINE_AA)
-        frame = cv2.putText(frame, confidence, (10,50), cv2.FONT_HERSHEY_SIMPLEX, 
-                   1, (0,255,0), 1, cv2.LINE_AA)
+        if len(label) > 0:
+            confidence = f'{int(np.max(gesture_label) * 100)}%'
+
+            frame = cv2.putText(frame, label, (10,25), cv2.FONT_HERSHEY_SIMPLEX, 
+                    1, (0,255,0), 1, cv2.LINE_AA)
+            frame = cv2.putText(frame, confidence, (10,50), cv2.FONT_HERSHEY_SIMPLEX, 
+                    1, (0,255,0), 1, cv2.LINE_AA)
 
         cv2.imshow(WINDOW_NAME, frame)
 

@@ -4,8 +4,8 @@ import numpy as np
 
 
 PAPER_KEY = 'p'
-STONE_KEY = 'k'
-SCISSORS_KEY = 'n'
+ROCK_KEY = 'r'
+SCISSORS_KEY = 's'
 OTHER_KEY = 'o'
 
 WINDOW_NAME = "Gesture capture"
@@ -32,7 +32,7 @@ def calculate_temperature(raw_value: np.uint16) -> np.uint8:
 def gesture_capture():
     """Camera capture for gesture dataset."""
 
-    for data_class in ['paper', 'stone', 'scissors', 'other']:
+    for data_class in ['paper', 'rock', 'scissors', 'other']:
         if not os.path.exists(f'dataset/{data_class}'):
             os.makedirs(f'dataset/{data_class}')
 
@@ -61,9 +61,9 @@ def gesture_capture():
         elif key == ord(PAPER_KEY):
             num = len(os.listdir('dataset/paper'))
             cv2.imwrite(f'dataset/paper/{str(num).zfill(3)}.jpg', frame)
-        elif key == ord(STONE_KEY):
-            num = len(os.listdir('dataset/stone'))
-            cv2.imwrite(f'dataset/stone/{str(num).zfill(3)}.jpg', frame)
+        elif key == ord(ROCK_KEY):
+            num = len(os.listdir('dataset/rock'))
+            cv2.imwrite(f'dataset/rock/{str(num).zfill(3)}.jpg', frame)
         elif key == ord(SCISSORS_KEY):
             num = len(os.listdir('dataset/scissors'))
             cv2.imwrite(f'dataset/scissors/{str(num).zfill(3)}.jpg', frame)
